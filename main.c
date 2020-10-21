@@ -1,7 +1,5 @@
 #include "darknet.h"
 #include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
 
 
 
@@ -18,8 +16,8 @@ int main(int argc, char **argv)
     char* parameters[] = {"./darknet",
                           "classifier",
                           "train",
-                          "/home/georg/Desktop/darknet/cfg/cifar.data",
-                          "/home/georg/Desktop/darknet/cfg/cifar_small.cfg"};
+                          "/home/georg/Desktop/darknet-mini/cfg/data/cifar.data",
+                          "/home/georg/Desktop/darknet-mini/cfg/networks/cls_cifar_small _conv.cfg"};
     argv = parameters;
 //    *****************************************************************/
 

@@ -18,15 +18,13 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
 
     // 加载预训练权重
     if(weightfile){
-        load_weights(&nets[i], weightfile);
+        // TODO: 待办.
+        // load_weights(&nets[i], weightfile);
     }
 
     // 设置随机种子
     srand(time(0));
     int seed = rand();
-
-
-
 
     printf("trian_classifier is running...\n");
 }

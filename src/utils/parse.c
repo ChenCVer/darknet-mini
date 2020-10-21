@@ -1,6 +1,8 @@
 #include "parse.h"
 #include "utils.h"
 #include "../data_struct/list.h"
+#include "../layers/convolutional_layer.h"
+#include "../layers/activations.h"
 
 
 typedef struct{
@@ -79,6 +81,37 @@ void free_section(section *s)
     }
     free(s->options);
     free(s);
+}
+
+
+convolutional_layer parse_convolutional(list *options, size_params params)
+{
+    int n = option_find_int(options, "filters",1);
+    int size = option_find_int(options, "size",1);
+    int stride = option_find_int(options, "stride",1);
+    int pad = option_find_int_quiet(options, "pad",0);
+    int padding = option_find_int_quiet(options, "padding",0);
+    int groups = option_find_int_quiet(options, "groups", 1);
+    if(pad) padding = size/2;
+
+    char *activation_s = option_find_str(options, "activation", "logistic");
+    ACTIVATION activation = get_activation(activation_s);
+
+    int batch,h,w,c;
+    h = params.h;
+    w = params.w;
+    c = params.c;
+    batch=params.batch;
+    if(!(h && w && c)) error("Layer before convolutional layer must output image.");
+    int batch_normalize = option_find_int_quiet(options, "batch_normalize", 0);
+    int binary = option_find_int_quiet(options, "binary", 0);
+    int xnor = option_find_int_quiet(options, "xnor", 0);
+
+    convolutional_layer layer = make_convolutional_layer(batch,h,w,c,n,groups,size,stride,padding,activation, batch_normalize, binary, xnor, params.net->adam);
+    layer.flipped = option_find_int_quiet(options, "flipped", 0);
+    layer.dot = option_find_float_quiet(options, "dot", 0);
+
+    return layer;
 }
 
 
@@ -205,41 +238,12 @@ network parse_network_cfg(char *filename)
         fprintf(stderr, "%5d ", count);
         s = (section *)n->val;
         options = s->options;
+
         layer l = {0};
         LAYER_TYPE lt = string_to_layer_type(s->type);
-        if(lt == CONVOLUTIONAL){
-            l = parse_convolutional(options, params);
-        }else if(lt == DECONVOLUTIONAL){
-            l = parse_deconvolutional(options, params);
-        }else if(lt == LOCAL){
-            l = parse_local(options, params);
-        }else if(lt == ACTIVE){
-            l = parse_activation(options, params);
-        }else if(lt == CONNECTED){
-            l = parse_connected(options, params);
-        }else if(lt == COST){
-            l = parse_cost(options, params);
-        }else if(lt == SOFTMAX){
-            l = parse_softmax(options, params);
-            net->hierarchy = l.softmax_tree;
-        }else if(lt == NORMALIZATION){
-            l = parse_normalization(options, params);
-        }else if(lt == BATCHNORM){
-            l = parse_batchnorm(options, params);
-        }else if(lt == MAXPOOL){
-            l = parse_maxpool(options, params);
-        }else if(lt == AVGPOOL){
-            l = parse_avgpool(options, params);
-        }else if(lt == UPSAMPLE){
-            l = parse_upsample(options, params, net);
-        }else if(lt == SHORTCUT){
-            l = parse_shortcut(options, params, net);
-        }else if(lt == DROPOUT){
-            l = parse_dropout(options, params);
-            l.output = net->layers[count-1].output;
-            l.delta = net->layers[count-1].delta;
-
-        }else{
+        // 解析网络层
+        if(lt == CONVOLUTIONAL){l = parse_convolutional(options, params);}
+        else{
             fprintf(stderr, "Type not recognized: %s\n", s->type);
         }
         l.clip = net->clip;
@@ -279,7 +283,7 @@ network parse_network_cfg(char *filename)
         net->workspace = calloc(1, workspace_size);
     }
 
-    return net;
+    return *net;
 }
 
 list *read_cfg(char *filename)

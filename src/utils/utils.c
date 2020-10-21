@@ -10,6 +10,26 @@ void calloc_error()
     exit(EXIT_FAILURE);
 }
 
+float rand_normal()
+{
+    static int haveSpare = 0;
+    static double rand1, rand2;
+
+    if(haveSpare)
+    {
+        haveSpare = 0;
+        return sqrt(rand1) * sin(rand2);
+    }
+
+    haveSpare = 1;
+
+    rand1 = rand() / ((double) RAND_MAX);
+    if(rand1 < 1e-100) rand1 = 1e-100;
+    rand1 = -2 * log(rand1);
+    rand2 = (rand() / ((double) RAND_MAX)) * TWO_PI;
+
+    return sqrt(rand1) * cos(rand2);
+}
 
 void *xcalloc(size_t nmemb, size_t size) {
     // malloc()和calloc()函数区别: https://www.cnblogs.com/stevenwuzheng/p/5484986.html
@@ -105,4 +125,24 @@ void strip(char *s)
         else s[i-offset] = c;
     }
     s[len-offset] = '\0';
+}
+
+float sum_array(float *a, int n)
+{
+    int i;
+    float sum = 0;
+    for(i = 0; i < n; ++i) sum += a[i];
+    return sum;
+}
+
+void axpy_cpu(int N, float ALPHA, float *X, int INCX, float *Y, int INCY)
+{
+    int i;
+    for(i = 0; i < N; ++i) Y[i*INCY] += ALPHA*X[i*INCX];
+}
+
+void scal_cpu(int N, float ALPHA, float *X, int INCX)
+{
+    int i;
+    for(i = 0; i < N; ++i) X[i*INCX] *= ALPHA;
 }
