@@ -75,10 +75,12 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
     load_thread = load_data(args);  // 数据加载过程的核心操作.
 
     /** phase4: 网络训练*/
+    float avg_loss = -1;
     int count = 0;
     int epoch = (int)(net.seen)/N;
-    while(get_current_batch(net) < net.max_batches || net.max_batches == 0){
+    while(get_current_batch(&net) < net.max_batches || net.max_batches == 0){
         if(net.random && count++%40 == 0){
+            /* TODO: resize这块先暂时不弄.
             printf("Resizing\n");
             int dim = (rand() % 11 + 4) * 32;
             //if (get_current_batch(net)+200 > net->max_batches) dim = 608;
@@ -90,15 +92,17 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
             args.min = net.min_ratio*dim;
             args.max = net.max_ratio*dim;
             printf("%d %d\n", args.min, args.max);
+            */
 
             pthread_join(load_thread, 0);
             train = buffer;
             free_data(train);
             load_thread = load_data(args);
 
+            /* TODO: 这里是由于图像输入分辨率变了.网络的尺寸也相应发生变化, 这里先暂时不管.
             for(i = 0; i < ngpus; ++i){
                 resize_network(nets[i], dim, dim);
-            }
+            }*/
             net = nets[0];
         }
         time = what_time_is_it_now();
@@ -112,31 +116,32 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
 
         float loss = 0;
 
-        loss = train_network(net, train);
+        loss = train_network(&net, train);
 
         if(avg_loss == -1) avg_loss = loss;
         avg_loss = avg_loss*.9 + loss*.1;
-        printf("%ld, %.3f: %f, %f avg, %f rate, %lf seconds, %ld images\n", get_current_batch(net), (float)(*net->seen)/N, loss, avg_loss, get_current_rate(net), what_time_is_it_now()-time, *net->seen);
+        printf("%ld, %.3f: %f, %f avg, %f rate, %lf seconds, %ld images\n", get_current_batch(&net),
+               (int)(net.seen)/N, loss, avg_loss, get_current_rate(&net), what_time_is_it_now()-time, net.seen);
         free_data(train);
         if(*net.seen/N > epoch){
             epoch = (int)(net.seen)/N;
             char buff[256];
             sprintf(buff, "%s/%s_%d.weights",backup_directory,base, epoch);
-            save_weights(net, buff);
+            save_weights(&net, buff);
         }
-        if(get_current_batch(net)%1000 == 0){
+        if(get_current_batch(&net)%1000 == 0){
             char buff[256];
             sprintf(buff, "%s/%s.backup",backup_directory,base);
-            save_weights(net, buff);
+            save_weights(&net, buff);
         }
     }
 
     char buff[256];
     sprintf(buff, "%s/%s.weights", backup_directory, base);
-    save_weights(net, buff);
+    save_weights(&net, buff);
     pthread_join(load_thread, 0);
 
-    free_network(net);
+    free_network(&net);
     if(labels) free_ptrs((void**)labels, classes);
     free_ptrs((void**)paths, plist->size);
     free_list(plist);

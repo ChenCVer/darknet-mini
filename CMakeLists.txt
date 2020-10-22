@@ -45,6 +45,8 @@ add_executable(darknet-mini
         src/data_struct/sections.c
         src/utils/data.h
         src/utils/data.c
+        src/layers/layer.h
+        src/layers/layer.c
         src/data_struct/matrix.h
         src/data_struct/matrix.c
         src/data_struct/image.h
@@ -58,6 +60,6 @@ target_link_libraries(darknet-mini ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(darknet-mini m)
 
 # 添加opencv库
-set(OpenCV_DIR /home/cxj/Documents/opencv-3.4.2/build/CMakeFiles)
-find_package(OpenCV)
-target_link_libraries(darknet-mini ${OpenCV_LIBS})
+# set(OpenCV_DIR /home/cxj/Documents/opencv-3.4.2/build/CMakeFiles)
+#find_package(OpenCV)
+#target_link_libraries(darknet-mini ${OpenCV_LIBS})

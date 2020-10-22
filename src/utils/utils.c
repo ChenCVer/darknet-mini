@@ -199,3 +199,19 @@ int constrain_int(int a, int min, int max)
     if (a > max) return max;
     return a;
 }
+
+double what_time_is_it_now()
+{
+    struct timeval time;
+    if (gettimeofday(&time,NULL)){
+        return 0;
+    }
+    return (double)time.tv_sec + (double)time.tv_usec * .000001;
+}
+
+void free_ptrs(void **ptrs, int n)
+{
+    int i;
+    for(i = 0; i < n; ++i) free(ptrs[i]);
+    free(ptrs);
+}

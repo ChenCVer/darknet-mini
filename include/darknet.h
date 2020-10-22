@@ -78,6 +78,9 @@ typedef struct{
     int t;
 } update_args;
 
+typedef struct network network;
+typedef struct layer layer;
+
 // 2. 网络中的每一层的层定义
 typedef struct layer{
     LAYER_TYPE type;        // 网络层类型

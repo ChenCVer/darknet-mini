@@ -30,5 +30,7 @@ float rand_scale(float s);
 int rand_int(int min, int max);
 float dist_array(float *a, float *b, int n, int sub);
 int constrain_int(int a, int min, int max);
+double what_time_is_it_now();
+void free_ptrs(void **ptrs, int n);
 
 #endif

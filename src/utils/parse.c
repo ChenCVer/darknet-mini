@@ -300,3 +300,51 @@ network parse_network_cfg(char *filename)
 
     return *net;
 }
+
+void save_weights(network *net, char *filename)
+{
+    save_weights_upto(net, filename, net->n);
+}
+
+void save_weights_upto(network *net, char *filename, int cutoff)
+{
+    fprintf(stderr, "Saving weights to %s\n", filename);
+    FILE *fp = fopen(filename, "wb");
+    if(!fp) file_error(filename);
+
+    int major = 0;
+    int minor = 2;
+    int revision = 0;
+    fwrite(&major, sizeof(int), 1, fp);
+    fwrite(&minor, sizeof(int), 1, fp);
+    fwrite(&revision, sizeof(int), 1, fp);
+    fwrite(net->seen, sizeof(size_t), 1, fp);
+
+    int i;
+    for(i = 0; i < net->n && i < cutoff; ++i){
+        layer l = net->layers[i];
+        if (l.dontsave) continue;
+        if(l.type == CONVOLUTIONAL) save_convolutional_weights(l, fp);
+        if(l.type == BATCHNORM) save_batchnorm_weights(l, fp);
+    }
+    fclose(fp);
+}
+
+void save_convolutional_weights(layer l, FILE *fp)
+{
+    int num = l.nweights;
+    fwrite(l.biases, sizeof(float), l.n, fp);
+    if (l.batch_normalize){
+        fwrite(l.scales, sizeof(float), l.n, fp);
+        fwrite(l.rolling_mean, sizeof(float), l.n, fp);
+        fwrite(l.rolling_variance, sizeof(float), l.n, fp);
+    }
+    fwrite(l.weights, sizeof(float), num, fp);
+}
+
+void save_batchnorm_weights(layer l, FILE *fp)
+{
+    fwrite(l.scales, sizeof(float), l.c, fp);
+    fwrite(l.rolling_mean, sizeof(float), l.c, fp);
+    fwrite(l.rolling_variance, sizeof(float), l.c, fp);
+}
