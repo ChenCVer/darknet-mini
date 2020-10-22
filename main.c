@@ -1,7 +1,6 @@
 #include "darknet.h"
 #include <stdio.h>
 
-
 // 函数的声明中带有关键字extern, 仅仅是暗示这个函数可能在别的源文档里定义.
 extern void run_classifier(int argc, char **argv);
 
@@ -31,6 +30,7 @@ int main(int argc, char **argv)
     else {
         fprintf(stderr, "Not an option: %s\n", argv[1]);
     }
+
 
     return 0;
 }

@@ -1,6 +1,6 @@
 classes=10
-train  = /home/georg/Documents/data/cifar/train.list
-valid  = /home/georg/Documents/data/cifar/test.list
-labels = /home/georg/Documents/data/cifar/labels.txt
-backup = /home/georg/Desktop/darknet/results
+train  = /home/cxj/Desktop/data/cifar/train.list
+valid  = /home/cxj/Desktop/data/cifar/test.list
+labels = /home/cxj/Desktop/data/cifar/labels.txt
+backup = /home/cxj/Desktop/code/darknet-mini/results
 top=1

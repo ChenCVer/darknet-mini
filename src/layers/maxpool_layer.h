@@ -2,7 +2,6 @@
 #define MAXPOOL_LAYER_H
 
 #include "network.h"
-#include <float.h>
 
 typedef layer maxpool_layer;
 

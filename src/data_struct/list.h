@@ -18,5 +18,6 @@ float option_find_float_quiet(list *l, char *key, float def);
 char *option_find_str(list *l, char *key, char *def);
 void option_unused(list *l);
 list *read_cfg(char *filename);
-
+list *read_data_cfg(char *filename);
+void **list_to_array(list *l);
 #endif

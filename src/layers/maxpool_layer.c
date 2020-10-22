@@ -1,5 +1,6 @@
 #include "maxpool_layer.h"
 #include <stdio.h>
+#include <float.h>
 
 
 maxpool_layer make_maxpool_layer(int batch, int h, int w, int c, int size, int stride, int padding)

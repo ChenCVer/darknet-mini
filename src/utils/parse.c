@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "../data_struct/sections.h"
 #include "../data_struct/list.h"
+#include "../layers/activations.h"
 #include "../layers/convolutional_layer.h"
 #include "../layers/activation_layer.h"
 #include "../layers/maxpool_layer.h"

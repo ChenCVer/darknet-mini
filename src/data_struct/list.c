@@ -66,18 +66,6 @@ void free_list_contents(list *l)
 	}
 }
 
-void **list_to_array(list *l)
-{
-    void **a = calloc(l->size, sizeof(void*));
-    int count = 0;
-    node *n = l->front;
-    while(n){
-        a[count++] = n->val;
-        n = n->next;
-    }
-    return a;
-}
-
 int option_find_int(list *l, char *key, int def)
 {
     char *v = option_find(l, key);
@@ -202,4 +190,44 @@ list *read_cfg(char *filename)
     }
     fclose(file);
     return options;
+}
+
+list *read_data_cfg(char *filename)
+{
+    FILE *file = fopen(filename, "r");
+    if(file == 0) file_error(filename);
+    char *line;
+    int nu = 0;
+    list *options = make_list();  // 初始化链表
+    while((line=fgetl(file)) != 0){
+        ++nu;
+        strip(line);
+        switch(line[0]){
+            case '\0':
+            case '#':
+            case ';':
+                free(line);
+                break;
+            default:
+                if(!read_option(line, options)){
+                    fprintf(stderr, "Config file error line %d, could parse: %s\n", nu, line);
+                    free(line);
+                }
+                break;
+        }
+    }
+    fclose(file);
+    return options;
+}
+
+void **list_to_array(list *l)
+{
+    void **a = calloc(l->size, sizeof(void*));
+    int count = 0;
+    node *n = l->front;
+    while(n){
+        a[count++] = n->val;
+        n = n->next;
+    }
+    return a;
 }

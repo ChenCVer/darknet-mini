@@ -2,12 +2,6 @@
 #define CONVOLUTIONAL_LAYER_H
 
 #include "network.h"
-#include "../utils/utils.h"
-#include "../utils/blas.h"
-#include "../utils/im2col.h"
-#include "../utils/col2im.h"
-#include "../utils/gemm.h"
-#include "activations.h"
 
 typedef layer convolutional_layer;
 

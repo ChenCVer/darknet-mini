@@ -1,5 +1,11 @@
 #include "convolutional_layer.h"
 #include "batchnorm_layer.h"
+#include "../utils/utils.h"
+#include "../utils/blas.h"
+#include "../utils/im2col.h"
+#include "../utils/col2im.h"
+#include "../utils/gemm.h"
+#include "activations.h"
 #include <stdio.h>
 #include <math.h>
 

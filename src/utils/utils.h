@@ -24,5 +24,11 @@ void strip(char *s);
 float rand_normal();
 void axpy_cpu(int N, float ALPHA, float *X, int INCX, float *Y, int INCY);
 void scal_cpu(int N, float ALPHA, float *X, int INCX);
+float mag_array(float *a, int n);
+float rand_uniform(float min, float max);
+float rand_scale(float s);
+int rand_int(int min, int max);
+float dist_array(float *a, float *b, int n, int sub);
+int constrain_int(int a, int min, int max);
 
 #endif

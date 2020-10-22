@@ -146,3 +146,56 @@ void scal_cpu(int N, float ALPHA, float *X, int INCX)
     int i;
     for(i = 0; i < N; ++i) X[i*INCX] *= ALPHA;
 }
+
+float mag_array(float *a, int n)
+{
+    int i;
+    float sum = 0;
+    for(i = 0; i < n; ++i){
+        sum += a[i]*a[i];
+    }
+    return sqrt(sum);
+}
+
+float rand_uniform(float min, float max)
+{
+    if(max < min){
+        float swap = min;
+        min = max;
+        max = swap;
+    }
+    return ((float)rand()/RAND_MAX * (max - min)) + min;
+}
+
+float rand_scale(float s)
+{
+    float scale = rand_uniform(1, s);
+    if(rand()%2) return scale;
+    return 1./scale;
+}
+
+int rand_int(int min, int max)
+{
+    if (max < min){
+        int s = min;
+        min = max;
+        max = s;
+    }
+    int r = (rand()%(max - min + 1)) + min;
+    return r;
+}
+
+float dist_array(float *a, float *b, int n, int sub)
+{
+    int i;
+    float sum = 0;
+    for(i = 0; i < n; i += sub) sum += pow(a[i]-b[i], 2);
+    return sqrt(sum);
+}
+
+int constrain_int(int a, int min, int max)
+{
+    if (a < min) return min;
+    if (a > max) return max;
+    return a;
+}

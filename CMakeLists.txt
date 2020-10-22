@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.12)
 project(darknet-mini)
 
 set(CMAKE_C_STANDARD 99)
@@ -40,7 +40,7 @@ add_executable(darknet-mini
         src/layers/avgpool_layer.h
         src/layers/avgpool_layer.c
         src/layers/softmax_layer.h
-        src/layers/softmax_layer.c src/data_struct/sections.h src/data_struct/sections.c)
+        src/layers/softmax_layer.c src/data_struct/sections.h src/data_struct/sections.c src/utils/data.h src/utils/data.c src/data_struct/matrix.h src/data_struct/matrix.c src/data_struct/image.h src/data_struct/image.c)
 
 # 在Clion中生成的CMakeList.txt, 添加pthread库.
 find_package(Threads)
@@ -48,3 +48,8 @@ target_link_libraries(darknet-mini ${CMAKE_THREAD_LIBS_INIT})
 
 # cmake中添加math.h标准库
 target_link_libraries(darknet-mini m)
+
+# 添加opencv库
+set(OpenCV_DIR /home/cxj/Documents/opencv-3.4.2/build/CMakeFiles)
+find_package(OpenCV)
+target_link_libraries(darknet-mini ${OpenCV_LIBS})

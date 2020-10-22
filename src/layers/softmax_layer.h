@@ -1,5 +1,6 @@
 #ifndef SOFTMAX_LAYER_H
 #define SOFTMAX_LAYER_H
+
 #include "network.h"
 
 typedef layer softmax_layer;
