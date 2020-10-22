@@ -8,6 +8,7 @@
 #include <math.h>
 #include "darknet.h"
 
+// 下面这些函数是后期加上去的.
 void save_image(image im, const char *name);
 image make_image(int w, int h, int c);
 image copy_image(image p);

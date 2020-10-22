@@ -40,7 +40,15 @@ add_executable(darknet-mini
         src/layers/avgpool_layer.h
         src/layers/avgpool_layer.c
         src/layers/softmax_layer.h
-        src/layers/softmax_layer.c src/data_struct/sections.h src/data_struct/sections.c src/utils/data.h src/utils/data.c src/data_struct/matrix.h src/data_struct/matrix.c src/data_struct/image.h src/data_struct/image.c)
+        src/layers/softmax_layer.c
+        src/data_struct/sections.h
+        src/data_struct/sections.c
+        src/utils/data.h
+        src/utils/data.c
+        src/data_struct/matrix.h
+        src/data_struct/matrix.c
+        src/data_struct/image.h
+        src/data_struct/image.c)
 
 # 在Clion中生成的CMakeList.txt, 添加pthread库.
 find_package(Threads)

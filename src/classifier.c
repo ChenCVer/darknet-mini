@@ -74,7 +74,73 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
     args.d = &buffer;
     load_thread = load_data(args);  // 数据加载过程的核心操作.
 
+    /** phase4: 网络训练*/
+    int count = 0;
+    int epoch = (int)(net.seen)/N;
+    while(get_current_batch(net) < net.max_batches || net.max_batches == 0){
+        if(net.random && count++%40 == 0){
+            printf("Resizing\n");
+            int dim = (rand() % 11 + 4) * 32;
+            //if (get_current_batch(net)+200 > net->max_batches) dim = 608;
+            //int dim = (rand() % 4 + 16) * 32;
+            printf("%d\n", dim);
+            args.w = dim;
+            args.h = dim;
+            args.size = dim;
+            args.min = net.min_ratio*dim;
+            args.max = net.max_ratio*dim;
+            printf("%d %d\n", args.min, args.max);
 
+            pthread_join(load_thread, 0);
+            train = buffer;
+            free_data(train);
+            load_thread = load_data(args);
+
+            for(i = 0; i < ngpus; ++i){
+                resize_network(nets[i], dim, dim);
+            }
+            net = nets[0];
+        }
+        time = what_time_is_it_now();
+
+        pthread_join(load_thread, 0);
+        train = buffer;
+        load_thread = load_data(args);
+
+        printf("Loaded: %lf seconds\n", what_time_is_it_now()-time);
+        time = what_time_is_it_now();
+
+        float loss = 0;
+
+        loss = train_network(net, train);
+
+        if(avg_loss == -1) avg_loss = loss;
+        avg_loss = avg_loss*.9 + loss*.1;
+        printf("%ld, %.3f: %f, %f avg, %f rate, %lf seconds, %ld images\n", get_current_batch(net), (float)(*net->seen)/N, loss, avg_loss, get_current_rate(net), what_time_is_it_now()-time, *net->seen);
+        free_data(train);
+        if(*net.seen/N > epoch){
+            epoch = (int)(net.seen)/N;
+            char buff[256];
+            sprintf(buff, "%s/%s_%d.weights",backup_directory,base, epoch);
+            save_weights(net, buff);
+        }
+        if(get_current_batch(net)%1000 == 0){
+            char buff[256];
+            sprintf(buff, "%s/%s.backup",backup_directory,base);
+            save_weights(net, buff);
+        }
+    }
+
+    char buff[256];
+    sprintf(buff, "%s/%s.weights", backup_directory, base);
+    save_weights(net, buff);
+    pthread_join(load_thread, 0);
+
+    free_network(net);
+    if(labels) free_ptrs((void**)labels, classes);
+    free_ptrs((void**)paths, plist->size);
+    free_list(plist);
+    free(base);
 }
 
 
