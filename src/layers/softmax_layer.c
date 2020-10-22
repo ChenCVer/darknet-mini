@@ -35,17 +35,9 @@ softmax_layer make_softmax_layer(int batch, int inputs, int groups)
 
 void forward_softmax_layer(const softmax_layer l, network net)
 {
-    if(l.softmax_tree){
-        int i;
-        int count = 0;
-        for (i = 0; i < l.softmax_tree->groups; ++i) {
-            int group_size = l.softmax_tree->group_size[i];
-            softmax_cpu(net.input + count, group_size, l.batch, l.inputs, 1, 0, 1, l.temperature, l.output + count);
-            count += group_size;
-        }
-    } else {
-        softmax_cpu(net.input, l.inputs/l.groups, l.batch, l.inputs, l.groups, l.inputs/l.groups, 1, l.temperature, l.output);
-    }
+
+    softmax_cpu(net.input, l.inputs/l.groups, l.batch, l.inputs, l.groups,
+                l.inputs/l.groups, 1, l.temperature, l.output);
 
     if(net.truth && !l.noloss){
         softmax_x_ent_cpu(l.batch*l.inputs, l.output, net.truth, l.delta, l.loss);

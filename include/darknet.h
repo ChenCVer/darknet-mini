@@ -6,60 +6,29 @@
 #include <string.h>
 #include <pthread.h>
 
+/** Note: 该文件用来放各种定义的数据结构和定义的枚举类型*/
 
-
+// ------------------------以下各种枚举------------------------------
+// 1.网络中的各种层类型
 typedef enum {
     CONVOLUTIONAL,
-    DECONVOLUTIONAL,
-    CONNECTED,
     MAXPOOL,
     SOFTMAX,
-    DETECTION,
-    DROPOUT,
-    CROP,
-    ROUTE,
-    COST,
-    NORMALIZATION,
-    AVGPOOL,
-    LOCAL,
-    SHORTCUT,
-    ACTIVE,
-    RNN,
-    GRU,
-    LSTM,
-    CRNN,
-    BATCHNORM,
     NETWORK,
-    XNOR,
-    REGION,
-    YOLO,
-    ISEG,
-    REORG,
-    UPSAMPLE,
-    LOGXENT,
-    L2NORM,
-    BLANK
+    AVGPOOL,
+    ACTIVE,
+    BATCHNORM,
+    BLANK,
+    COST
 } LAYER_TYPE;
 
-
+// 2. 各种激活函数类型
 typedef enum{
-    LOGISTIC,
     RELU,
-    RELIE,
-    LINEAR,
-    RAMP,
-    TANH,
-    PLSE,
     LEAKY,
-    ELU,
-    LOGGY,
-    STAIR,
-    HARDTAN,
-    LHTAN,
-    SELU
 } ACTIVATION;
 
-
+// 3. 各种损失函数类型
 typedef enum{
     SSE,
     MASKED,
@@ -70,21 +39,7 @@ typedef enum{
 } COST_TYPE;
 
 
-typedef struct tree {
-    int *leaf;
-    int n;
-    int *parent;
-    int *child;
-    int *group;
-    char **name;
-
-    int groups;
-    int *group_size;
-    int *group_offset;
-} tree;
-
-
-// 学习率策略
+// 4. 学习率调整策略类型
 typedef enum {
     CONSTANT,
     STEP,
@@ -96,6 +51,9 @@ typedef enum {
     SGDR
 } learning_rate_policy;
 
+
+// ------------------------以下各种数据结构----------------------------
+// 1. 用于更新网络参数时所用到
 typedef struct{
     int batch;
     float learning_rate;
@@ -108,78 +66,8 @@ typedef struct{
     int t;
 } update_args;
 
-
-struct network;
-typedef struct network network;
-
-struct layer;
-typedef struct layer layer;
-
-
-// 网络结构定义
-typedef struct network{
-    int n;          // 网络的层数, 调用make_network(int n)时赋值
-    int batch;      //一批训练中的图片参数, 和subdivsions参数相关
-    size_t *seen;   //目前已经读入的图片张数(网络已经处理的图片张数)
-    int *t;
-    float epoch;   //到目前为止训练了整个数据集的次数
-    int subdivisions;
-    layer *layers;
-    float *output;
-    learning_rate_policy policy;
-
-    float learning_rate;
-    float momentum;
-    float decay;
-    float gamma;
-    float scale;
-    float power;
-    int time_steps;
-    int step;
-    int max_batches;
-    float *scales;
-    int   *steps;
-    int num_steps;
-    int burn_in;
-
-    int adam;
-    float B1;
-    float B2;
-    float eps;
-
-    int inputs;
-    int outputs;
-    int truths;
-    int notruth;
-    int h, w, c;
-    int max_crop;
-    int min_crop;
-    float max_ratio;
-    float min_ratio;
-    int center;
-    float angle;
-    float aspect;
-    float exposure;
-    float saturation;
-    float hue;
-    int random;
-
-    int gpu_index;
-    tree *hierarchy;
-
-    float *input;
-    float *truth;
-    float *delta;
-    float *workspace;
-    int train;
-    int index;
-    float *cost;
-    float clip;
-
-} network;
-
-
-struct layer{
+// 2. 网络中的每一层的层定义
+typedef struct layer{
     LAYER_TYPE type;        // 网络层类型
     ACTIVATION activation;  // 激活层类型
     COST_TYPE cost_type;    // 损失函数类型
@@ -192,11 +80,11 @@ struct layer{
     int forced;
     int flipped;
     int inputs;   // 一张输入图片所含的元素个数(一般在各网络层构建函数中赋值, 比如make_connected_layer()),
-                  // 第一层的值等于l.h*l.w*l.c,之后的每一层都是由上一层的输出自动推算得到的(参见parse_network_cfg(),
-                  // 在构建每一层后,会更新params.inputs为上一层的l.outputs).
+    // 第一层的值等于l.h*l.w*l.c,之后的每一层都是由上一层的输出自动推算得到的(参见parse_network_cfg(),
+    // 在构建每一层后,会更新params.inputs为上一层的l.outputs).
     int outputs;  // 该层对应一张输入图片的输出元素个数(一般在各网络层构建函数中赋值,比如make_connected_layer())
-                  // 对于一些网络,可由输入图片的尺寸及相关参数计算出,比如卷积层,可以通过输入尺寸以及步长、核大小计算出；
-                  // 对于另一些尺寸,则需要通过网络配置文件指定,如未指定,取默认值1,比如全连接层(见parse_connected()函数)
+    // 对于一些网络,可由输入图片的尺寸及相关参数计算出,比如卷积层,可以通过输入尺寸以及步长、核大小计算出；
+    // 对于另一些尺寸,则需要通过网络配置文件指定,如未指定,取默认值1,比如全连接层(见parse_connected()函数)
     int nweights;
     int nbiases;
     int extra;
@@ -394,25 +282,100 @@ struct layer{
     struct layer *wi;
     struct layer *ug;
     struct layer *wg;
-
-    tree *softmax_tree;
-
     size_t workspace_size;
 
-};
+}layer;
 
+// 3. 网络结构定义
+typedef struct network{
+    int n;          // 网络的层数, 调用make_network(int n)时赋值
+    int batch;      //一批训练中的图片参数, 和subdivsions参数相关
+    size_t *seen;   //目前已经读入的图片张数(网络已经处理的图片张数)
+    int *t;
+    float epoch;   //到目前为止训练了整个数据集的次数
+    int subdivisions;
+    layer *layers;
+    float *output;
+    learning_rate_policy policy;
+
+    float learning_rate;
+    float momentum;
+    float decay;
+    float gamma;
+    float scale;
+    float power;
+    int time_steps;
+    int step;
+    int max_batches;
+    float *scales;
+    int   *steps;
+    int num_steps;
+    int burn_in;
+
+    int adam;
+    float B1;
+    float B2;
+    float eps;
+
+    int inputs;
+    int outputs;
+    int truths;
+    int notruth;
+    int h, w, c;
+    int max_crop;
+    int min_crop;
+    float max_ratio;
+    float min_ratio;
+    int center;
+    float angle;
+    float aspect;
+    float exposure;
+    float saturation;
+    float hue;
+    int random;
+
+    int gpu_index;
+
+    float *input;
+    float *truth;
+    float *delta;
+    float *workspace;
+    int train;
+    int index;
+    float *cost;
+    float clip;
+
+} network;
+
+// ---------------------------读取配置文件时相关数据结构
+// 4. 解析.cfg文件时用到
 typedef struct node{
     void *val;
     struct node *next;
     struct node *prev;
 } node;
 
+// 5. 解析.cfg文件时用到
 typedef struct list{
     int size;
     node *front;
     node *back;
 } list;
 
+// 5. 解析.cfg文件会用到
+typedef struct{
+    char *key;
+    char *val;
+    int used;
+} kvp;
+
+// 6. 解析.cfg文件会用到
+typedef struct{
+    char *type;
+    list *options;
+}section;
+
+// 7. parse网络层时用到.
 typedef struct size_params{
     int batch;
     int inputs;

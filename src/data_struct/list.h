@@ -2,11 +2,6 @@
 #define LIST_H
 #include "darknet.h"
 
-typedef struct{
-    char *key;
-    char *val;
-    int used;
-} kvp;
 
 list *make_list();
 void free_list(list *l);

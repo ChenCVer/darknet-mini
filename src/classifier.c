@@ -4,9 +4,6 @@
 
 void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
 
-    int i;
-    float avg_loss = -1;
-
     char *base = basecfg(cfgfile);  // 分析(网络结构)配置文件
     printf("network cfg: %s\n", base);
 
