@@ -1,4 +1,5 @@
 #include "convolutional_layer.h"
+#include "batchnorm_layer.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -24,6 +25,18 @@ void add_bias(float *output, float *biases, int batch, int n, int size)
         for(i = 0; i < n; ++i){
             for(j = 0; j < size; ++j){
                 output[(b*n + i)*size + j] += biases[i];
+            }
+        }
+    }
+}
+
+void scale_bias(float *output, float *scales, int batch, int n, int size)
+{
+    int i,j,b;
+    for(b = 0; b < batch; ++b){
+        for(i = 0; i < n; ++i){
+            for(j = 0; j < size; ++j){
+                output[(b*n + i)*size + j] *= scales[i];
             }
         }
     }
@@ -157,8 +170,11 @@ void forward_convolutional_layer(convolutional_layer l, network net)
         }
     }
 
-
-    add_bias(l.output, l.biases, l.batch, l.n, l.out_h*l.out_w);
+    if(l.batch_normalize){
+        forward_batchnorm_layer(l, net);
+    } else {
+        add_bias(l.output, l.biases, l.batch, l.n, l.out_h*l.out_w);
+    }
 
     activate_array(l.output, l.outputs*l.batch, l.activation);
 }

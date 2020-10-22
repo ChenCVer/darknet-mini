@@ -3,7 +3,10 @@
 #include "../data_struct/list.h"
 #include "../layers/convolutional_layer.h"
 #include "../layers/activations.h"
-
+#include "../layers/activation_layer.h"
+#include "../layers/maxpool_layer.h"
+#include "../layers/avgpool_layer.h"
+#include "../layers/softmax_layer.h"
 
 typedef struct{
     char *type;
@@ -112,6 +115,63 @@ convolutional_layer parse_convolutional(list *options, size_params params)
     layer.dot = option_find_float_quiet(options, "dot", 0);
 
     return layer;
+}
+
+layer parse_activation(list *options, size_params params)
+{
+    char *activation_s = option_find_str(options, "activation", "linear");
+    ACTIVATION activation = get_activation(activation_s);
+
+    layer l = make_activation_layer(params.batch, params.inputs, activation);
+
+    l.h = l.out_h = params.h;
+    l.w = l.out_w = params.w;
+    l.c = l.out_c = params.c;
+
+    return l;
+}
+
+maxpool_layer parse_maxpool(list *options, size_params params)
+{
+    int stride = option_find_int(options, "stride",1);
+    int size = option_find_int(options, "size",stride);
+    int padding = option_find_int_quiet(options, "padding", size-1);
+
+    int batch,h,w,c;
+    h = params.h;
+    w = params.w;
+    c = params.c;
+    batch=params.batch;
+    if(!(h && w && c)) error("Layer before maxpool layer must output image.");
+
+    maxpool_layer layer = make_maxpool_layer(batch,h,w,c,size,stride,padding);
+    return layer;
+}
+
+avgpool_layer parse_avgpool(list *options, size_params params)
+{
+    int batch,w,h,c;
+    w = params.w;
+    h = params.h;
+    c = params.c;
+    batch=params.batch;
+    if(!(h && w && c)) error("Layer before avgpool layer must output image.");
+
+    avgpool_layer layer = make_avgpool_layer(batch,w,h,c);
+    return layer;
+}
+
+layer parse_softmax(list *options, size_params params)
+{
+    int groups = option_find_int_quiet(options, "groups",1);
+    layer l = make_softmax_layer(params.batch, params.inputs, groups);
+    l.temperature = option_find_float_quiet(options, "temperature", 1);
+    l.w = params.w;
+    l.h = params.h;
+    l.c = params.c;
+    l.spatial = option_find_float_quiet(options, "spatial", 0);
+    l.noloss =  option_find_int_quiet(options, "noloss", 0);
+    return l;
 }
 
 
@@ -239,11 +299,18 @@ network parse_network_cfg(char *filename)
 
         layer l = {0};
         LAYER_TYPE lt = string_to_layer_type(s->type);
-        // 解析网络层
-        if(lt == CONVOLUTIONAL){l = parse_convolutional(options, params);}
+        // 解析各种网络层
+        if(lt == CONVOLUTIONAL){l = parse_convolutional(options, params);}  // 解析卷积层
+        else if(lt == ACTIVE){l = parse_activation(options, params);}       // 解析激活层
+        else if(lt == MAXPOOL){l = parse_maxpool(options, params);}         // 解析池化层
+        else if(lt == AVGPOOL){l = parse_avgpool(options, params);}         // 解析globalAvgPooling层
+        else if(lt == SOFTMAX){                                             //
+            l = parse_softmax(options, params);
+            net->hierarchy = l.softmax_tree;}
         else{
             fprintf(stderr, "Type not recognized: %s\n", s->type);
         }
+
         l.clip = net->clip;
         l.truth = option_find_int_quiet(options, "truth", 0);
         l.onlyforward = option_find_int_quiet(options, "onlyforward", 0);

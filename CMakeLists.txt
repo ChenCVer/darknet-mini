@@ -32,7 +32,15 @@ add_executable(darknet-mini
         src/utils/gemm.h
         src/utils/gemm.c
         src/utils/col2im.h
-        src/utils/col2im.c)
+        src/utils/col2im.c
+        src/layers/batchnorm_layer.h
+        src/layers/batchnorm_layer.c
+        src/layers/maxpool_layer.h
+        src/layers/maxpool_layer.c
+        src/layers/avgpool_layer.h
+        src/layers/avgpool_layer.c
+        src/layers/softmax_layer.h
+        src/layers/softmax_layer.c)
 
 # 在Clion中生成的CMakeList.txt, 添加pthread库.
 find_package(Threads)

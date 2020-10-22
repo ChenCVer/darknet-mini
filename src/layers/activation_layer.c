@@ -1,8 +1,6 @@
 #include "activation_layer.h"
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "../utils/blas.h"
 #include "activations.h"
 
