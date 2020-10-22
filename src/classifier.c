@@ -10,10 +10,10 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
     char *base = basecfg(cfgfile);  // 分析(网络结构)配置文件
     printf("network cfg: %s\n", base);
 
-    // 为网络分配内存空间.
+    // nets指向大小为1*sizeof(network)的内存空间
     network* nets = (network*)xcalloc(1, sizeof(network));
 
-    // 解析网络配置文件, 初始化网络
+    // 解析网络配置文件, 为nets中的每个net进行初始化
     nets[0] = parse_network_cfg(cfgfile);
 
     // 加载预训练权重

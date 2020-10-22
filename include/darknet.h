@@ -425,7 +425,4 @@ typedef struct size_params{
 } size_params;
 
 
-char *basecfg(char *cfgfile);
-
-
 #endif

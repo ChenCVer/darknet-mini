@@ -1,6 +1,6 @@
 #include "network.h"
 
-network *make_network(int n)
+network* make_network(int n)
 {
     network *net = calloc(1, sizeof(network));
     net->n = n;

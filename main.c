@@ -16,8 +16,8 @@ int main(int argc, char **argv)
     char* parameters[] = {"./darknet",
                           "classifier",
                           "train",
-                          "/home/georg/Desktop/darknet-mini/cfg/data/cifar.data",
-                          "/home/georg/Desktop/darknet-mini/cfg/networks/cls_cifar_small _conv.cfg"};
+                          "/home/cxj/Desktop/code/darknet-mini/cfg/data/cifar.data",
+                          "/home/cxj/Desktop/code/darknet-mini/cfg/networks/cls_cifar_small _conv.cfg"};
     argv = parameters;
 //    *****************************************************************/
 

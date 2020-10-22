@@ -12,7 +12,7 @@
 
 
 float sum_array(float *a, int n);
-
+char *basecfg(char *cfgfile);
 void calloc_error();
 char *copy_string(char *s);
 void *xcalloc(size_t nmemb, size_t size);

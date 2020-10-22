@@ -208,13 +208,11 @@ network parse_network_cfg(char *filename)
     list *sections = read_cfg(filename);
     node *n = sections->front;
     if(!n) error("Config file has no sections");
-    // 构建网络空间
+    // 分配内存空间, 这里更多的是为net中的某些指针分配内存空间.
     network *net = make_network(sections->size - 1);
 
     net->gpu_index = 1;
-
     size_params params;
-
     section *s = (section *)n->val;
     list *options = s->options;
     if(!is_network(s)) error("First section must be [net] or [network]");
