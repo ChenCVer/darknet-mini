@@ -1,5 +1,6 @@
 #include "parse.h"
 #include "utils.h"
+#include "../data_struct/sections.h"
 #include "../data_struct/list.h"
 #include "../layers/convolutional_layer.h"
 #include "../layers/activation_layer.h"
@@ -33,22 +34,6 @@ learning_rate_policy get_policy(char *s)
     if (strcmp(s, "steps")==0) return STEPS;
     fprintf(stderr, "Couldn't find policy %s, going with constant\n", s);
     return CONSTANT;
-}
-
-void free_section(section *s)
-{
-    free(s->type);
-    node *n = s->options->front;
-    while(n){
-        kvp *pair = (kvp *)n->val;
-        free(pair->key);
-        free(pair);
-        node *next = n->next;
-        free(n);
-        n = next;
-    }
-    free(s->options);
-    free(s);
 }
 
 
@@ -125,6 +110,7 @@ avgpool_layer parse_avgpool(list *options, size_params params)
     avgpool_layer layer = make_avgpool_layer(batch,w,h,c);
     return layer;
 }
+
 
 layer parse_softmax(list *options, size_params params)
 {
@@ -221,10 +207,10 @@ void parse_net_options(list *options, network *net)
     net->max_batches = option_find_int(options, "max_batches", 0);
 }
 
+
 int is_network(section *s)
 {
-    return (strcmp(s->type, "[net]")==0
-            || strcmp(s->type, "[network]")==0);
+    return (strcmp(s->type, "[net]")==0 || strcmp(s->type, "[network]")==0);
 }
 
 network parse_network_cfg(char *filename)
@@ -313,39 +299,3 @@ network parse_network_cfg(char *filename)
 
     return *net;
 }
-
-list *read_cfg(char *filename)
-{
-    FILE *file = fopen(filename, "r");
-    if(file == 0) file_error(filename);
-    char *line;
-    int nu = 0;
-    list *options = make_list();
-    section *current = 0;
-    while((line=fgetl(file)) != 0){
-        ++ nu;
-        strip(line);
-        switch(line[0]){
-            case '[':
-                current = malloc(sizeof(section));
-                list_insert(options, current);
-                current->options = make_list();
-                current->type = line;
-                break;
-            case '\0':
-            case '#':
-            case ';':
-                free(line);
-                break;
-            default:
-                if(!read_option(line, current->options)){
-                    fprintf(stderr, "Config file error line %d, could parse: %s\n", nu, line);
-                    free(line);
-                }
-                break;
-        }
-    }
-    fclose(file);
-    return options;
-}
-

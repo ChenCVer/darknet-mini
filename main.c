@@ -16,7 +16,7 @@ int main(int argc, char **argv)
                           "classifier",
                           "train",
                           "/home/cxj/Desktop/code/darknet-mini/cfg/data/cifar.data",
-                          "/home/cxj/Desktop/code/darknet-mini/cfg/networks/cls_cifar_small _conv.cfg"};
+                          "/home/cxj/Desktop/code/darknet-mini/cfg/net/cls_cifar_small _conv.cfg"};
     argv = parameters;
 //    *****************************************************************/
 

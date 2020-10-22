@@ -7,7 +7,7 @@ include_directories(include)
 
 add_executable(darknet-mini
         cfg/data/cifar.data
-        cfg/networks/cls_cifar_small.cfg
+        cfg/net/cls_cifar_small.cfg
         main.c
         include/darknet.h
         src/classifier.c
@@ -40,7 +40,7 @@ add_executable(darknet-mini
         src/layers/avgpool_layer.h
         src/layers/avgpool_layer.c
         src/layers/softmax_layer.h
-        src/layers/softmax_layer.c)
+        src/layers/softmax_layer.c src/data_struct/sections.h src/data_struct/sections.c)
 
 # 在Clion中生成的CMakeList.txt, 添加pthread库.
 find_package(Threads)

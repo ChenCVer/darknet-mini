@@ -40,6 +40,7 @@ float gradient(float x, ACTIVATION a)
     return 0;
 }
 
+
 void gradient_array(const float *x, const int n, const ACTIVATION a, float *delta)
 {
     int i;

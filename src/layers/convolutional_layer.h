@@ -19,7 +19,7 @@ void backward_bias(float *bias_updates, float *delta, int batch, int n, int size
 
 convolutional_layer make_convolutional_layer(int batch, int h, int w, int c, int n, int groups, int size, int stride, int padding, ACTIVATION activation, int batch_normalize, int binary, int xnor, int adam);
 void forward_convolutional_layer(const convolutional_layer layer, network net);
-void update_convolutional_layer(convolutional_layer layer, update_args a);
 void backward_convolutional_layer(convolutional_layer layer, network net);
+void update_convolutional_layer(convolutional_layer layer, update_args a);
 
 #endif
