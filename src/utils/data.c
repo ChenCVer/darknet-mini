@@ -4,6 +4,7 @@
 #include "../data_struct/matrix.h"
 #include "../data_struct/image.h"
 
+
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 char **get_labels(char *filename)
@@ -50,7 +51,7 @@ matrix load_image_augment_paths(char **paths, int n, int min, int max, int size,
     X.cols = 0;
 
     for(i = 0; i < n; ++i){
-        image im = load_image_color(paths[i], 0, 0);
+        image im = load_image_color(paths[i], 0, 0);  // load_data. if opencv is compiled, ther use opencv
         image crop;
         if(center){
             crop = center_crop_image(im, size, size);
@@ -59,7 +60,7 @@ matrix load_image_augment_paths(char **paths, int n, int min, int max, int size,
         }
         int flip = rand()%2;
         if (flip) flip_image(crop);
-        random_distort_image(crop, hue, saturation, exposure);
+        random_distort_image(crop, hue, saturation, exposure);  // 数据增强
 
         // debug:
          show_image(im, "orig", 100);

@@ -61,6 +61,6 @@ target_link_libraries(darknet-mini ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(darknet-mini m)
 
 # 添加opencv库
- set(OpenCV_DIR /home/cxj/Documents/opencv-3.4.2/build/CMakeFiles)
+set(OpenCV_DIR /home/cxj/Documents/opencv-3.4.2/build/CMakeFiles)
 find_package(OpenCV)
 target_link_libraries(darknet-mini ${OpenCV_LIBS})
