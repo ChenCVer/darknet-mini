@@ -20,6 +20,7 @@ image crop_image(image im, int dx, int dy, int w, int h);
 image center_crop_image(image im, int w, int h);
 void flip_image(image a);
 void random_distort_image(image im, float hue, float saturation, float exposure);
+int show_image(image p, const char *name, int ms);
 
 
 #ifdef __cplusplus

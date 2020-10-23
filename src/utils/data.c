@@ -61,11 +61,11 @@ matrix load_image_augment_paths(char **paths, int n, int min, int max, int size,
         if (flip) flip_image(crop);
         random_distort_image(crop, hue, saturation, exposure);
 
-        /*
-        show_image(im, "orig");
-        show_image(crop, "crop");
-        cvWaitKey(0);
-        */
+        // debug:
+         show_image(im, "orig", 100);
+         show_image(crop, "crop", 100);
+         // cvWaitKey(0);
+
         //grayscale_image_3c(crop);
         free_image(im);
         X.vals[i] = crop.data;

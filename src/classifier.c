@@ -4,6 +4,7 @@
 #include "data_struct/list.h"
 #include "utils/data.h"
 
+
 void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
 
     char *base = basecfg(cfgfile);  // 分析(网络结构)配置文件
@@ -50,7 +51,7 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
     load_args args = {0};
     args.w = net.w;
     args.h = net.h;
-    args.threads = 64;
+    args.threads = 0;
 
     args.min = net.min_ratio*net.w;
     args.max = net.max_ratio*net.w;
@@ -80,6 +81,7 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
     int epoch = (*(net.seen))/N;  // net.seen为已经处理的图片数.
     while(get_current_batch(&net) < net.max_batches || net.max_batches == 0){
         if(net.random && count++%40 == 0){
+
             /* TODO: resize这块先暂时不弄.
             printf("Resizing\n");
             int dim = (rand() % 11 + 4) * 32;
@@ -124,13 +126,13 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
         printf("iters: %ld, epoch: %d, loss: %f, avg_loss:%f, lr: %f, iter_time_consume: %lf s, seen: %ld images\n",
                get_current_batch(&net), (*(net.seen))/N, loss, avg_loss, get_current_rate(&net), what_time_is_it_now()-time, *(net.seen));
         free_data(train);
-        if(*net.seen/N > epoch){
+        if(epoch >0 && *(net.seen)/N > epoch){
             epoch = (*(net.seen))/N/N;
             char buff[256];
             sprintf(buff, "%s/%s_%d.weights",backup_directory,base, epoch);
             save_weights(&net, buff);
         }
-        if(get_current_batch(&net)%1000 == 0){
+        if(get_current_batch(&net)%1000 == 0){  // 每隔一千次iter保存一次模型.
             char buff[256];
             sprintf(buff, "%s/%s.backup",backup_directory,base);
             save_weights(&net, buff);
