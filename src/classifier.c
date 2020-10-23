@@ -50,7 +50,7 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
     load_args args = {0};
     args.w = net.w;
     args.h = net.h;
-    args.threads = 32;
+    args.threads = 64;
 
     args.min = net.min_ratio*net.w;
     args.max = net.max_ratio*net.w;
@@ -77,7 +77,7 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
     /** phase4: 网络训练*/
     float avg_loss = -1;
     int count = 0;
-    int epoch = (int)(net.seen)/N;
+    int epoch = (*(net.seen))/N;  // net.seen为已经处理的图片数.
     while(get_current_batch(&net) < net.max_batches || net.max_batches == 0){
         if(net.random && count++%40 == 0){
             /* TODO: resize这块先暂时不弄.
@@ -111,7 +111,7 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
         train = buffer;
         load_thread = load_data(args);
 
-        printf("Loaded: %lf seconds\n", what_time_is_it_now()-time);
+        // printf("Loaded: %lf seconds\n", what_time_is_it_now()-time);
         time = what_time_is_it_now();
 
         float loss = 0;
@@ -120,11 +120,12 @@ void train_classifier(char* datacfg, char* cfgfile, char* weightfile){
 
         if(avg_loss == -1) avg_loss = loss;
         avg_loss = avg_loss*.9 + loss*.1;
-        printf("%ld, %.3f: %f, %f avg, %f rate, %lf seconds, %ld images\n", get_current_batch(&net),
-               (int)(net.seen)/N, loss, avg_loss, get_current_rate(&net), what_time_is_it_now()-time, net.seen);
+
+        printf("iters: %ld, epoch: %d, loss: %f, avg_loss:%f, lr: %f, iter_time_consume: %lf s, seen: %ld images\n",
+               get_current_batch(&net), (*(net.seen))/N, loss, avg_loss, get_current_rate(&net), what_time_is_it_now()-time, *(net.seen));
         free_data(train);
         if(*net.seen/N > epoch){
-            epoch = (int)(net.seen)/N;
+            epoch = (*(net.seen))/N/N;
             char buff[256];
             sprintf(buff, "%s/%s_%d.weights",backup_directory,base, epoch);
             save_weights(&net, buff);
