@@ -42,7 +42,8 @@ char **get_random_paths(char **paths, int n, int m)
     return random_paths;
 }
 
-matrix load_image_augment_paths(char **paths, int n, int min, int max, int size, float angle, float aspect, float hue, float saturation, float exposure, int center)
+matrix load_image_augment_paths(char **paths, int n, int min, int max, int size, float angle,
+                                float aspect, float hue, float saturation, float exposure, int center)
 {
     int i;
     matrix X;
@@ -63,8 +64,8 @@ matrix load_image_augment_paths(char **paths, int n, int min, int max, int size,
         random_distort_image(crop, hue, saturation, exposure);  // 数据增强
 
         // debug:
-         show_image(im, "orig", 100);
-         show_image(crop, "crop", 100);
+        // show_image(im, "orig", 100);
+        // show_image(crop, "crop", 100);
          // cvWaitKey(0);
 
         //grayscale_image_3c(crop);

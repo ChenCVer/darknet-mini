@@ -347,7 +347,7 @@ typedef struct network{
     float exposure;
     float saturation;
     float hue;
-    int random;
+    int random;  // 训练过程中是否更改输入图像分辨率
 
     int gpu_index;
 
