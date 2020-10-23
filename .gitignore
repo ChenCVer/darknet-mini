@@ -17,3 +17,6 @@ cmake-build-debug/
 
 # data
 data/
+
+#weights
+results/
